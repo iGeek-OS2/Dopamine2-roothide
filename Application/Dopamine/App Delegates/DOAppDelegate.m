@@ -1,46 +1,76 @@
 //
-//  AppDelegate.m
+//  SceneDelegate.m
 //  Dopamine
 //
 //  Created by Lars Fröder on 23.09.23.
 //
 
-#import "DOAppDelegate.h"
+#import "DOSceneDelegate.h"
+#import "DONavigationController.h"
 
-@interface DOAppDelegate ()
+@interface DOSceneDelegate ()
 
 @end
 
-@implementation DOAppDelegate
+@implementation DOSceneDelegate
 
-
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
-    return YES;
+- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions {
+    UIWindow *window = [[UIWindow alloc] initWithWindowScene:(UIWindowScene *)scene];
+    window.rootViewController = [[DONavigationController alloc] init];
+    [window makeKeyAndVisible];
+    self.window = window;
 }
 
-
-#pragma mark - UISceneSession lifecycle
-
-
-- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options {
-    // Called when a new scene session is being created.
-    // Use this method to select a configuration to create the new scene with.
-    return [[UISceneConfiguration alloc] initWithName:@"Default Configuration" sessionRole:connectingSceneSession.role];
-}
-
-
-- (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet<UISceneSession *> *)sceneSessions {
-    // Called when the user discards a scene session.
-    // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
-    // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
-}
-
-- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window
++ (void)relaunch
 {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-        return UIInterfaceOrientationMaskAll;
-    return UIInterfaceOrientationMaskPortrait;
+    UIWindowScene *windowScene = (UIWindowScene *)[[[UIApplication sharedApplication] connectedScenes] anyObject];
+    DOSceneDelegate *instance = (DOSceneDelegate *)windowScene.delegate;
+
+    [UIView animateWithDuration:0.3 animations:^{
+        instance.window.alpha = 0;
+    } completion:^(BOOL finished) {
+        UIWindow *window = [[UIWindow alloc] initWithWindowScene:(UIWindowScene *)instance.window.windowScene];
+        window.rootViewController = [[DONavigationController alloc] init];
+        [window makeKeyAndVisible];
+        instance.window = window;
+        instance.window.alpha = 0;
+        [UIView animateWithDuration:0.3 animations:^{
+            instance.window.alpha = 1;
+        }];
+    }];
 }
+
+- (void)sceneDidDisconnect:(UIScene *)scene {
+    // Called as the scene is being released by the system.
+    // This occurs shortly after the scene enters the background, or when its session is discarded.
+    // Release any resources associated with this scene that can be re-created the next time the scene connects.
+    // The scene may re-connect later, as its session was not necessarily discarded (see `application:didDiscardSceneSessions` instead).
+}
+
+
+- (void)sceneDidBecomeActive:(UIScene *)scene {
+    // Called when the scene has moved from an inactive state to an active state.
+    // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
+}
+
+
+- (void)sceneWillResignActive:(UIScene *)scene {
+    // Called when the scene will move from an active state to an inactive state.
+    // This may occur due to temporary interruptions (ex. an incoming phone call).
+}
+
+
+- (void)sceneWillEnterForeground:(UIScene *)scene {
+    // Called as the scene transitions from the background to the foreground.
+    // Use this method to undo the changes made on entering the background.
+}
+
+
+- (void)sceneDidEnterBackground:(UIScene *)scene {
+    // Called as the scene transitions from the foreground to the background.
+    // Use this method to save data, release shared resources, and store enough scene-specific state information
+    // to restore the scene back to its current state.
+}
+
 
 @end
